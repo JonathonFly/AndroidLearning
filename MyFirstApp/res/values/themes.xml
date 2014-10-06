@@ -5,13 +5,13 @@
         <item name="android:actionBarStyle" tools:targetApi="11">@style/MyActionBar</item>
         <item name="android:actionBarTabTextStyle" tools:targetApi="11">@style/MyActionBarTabText</item>
         <item name="android:actionMenuTextColor" tools:targetApi="11">@color/actionbar_text</item>
-        <item name="android:actionBarTabStyle" tools:targetApi="11">@style/MyActionBarTabs</item>
+        <!-- <item name="android:actionBarTabStyle" tools:targetApi="11">@style/MyActionBarTabs</item> -->
 
         <!-- Support library compatibility -->
         <item name="actionBarStyle">@style/MyActionBar</item>
         <item name="actionBarTabTextStyle">@style/MyActionBarTabText</item>
         <item name="actionMenuTextColor">@color/actionbar_text</item>
-        <item name="actionBarTabStyle">@style/MyActionBarTabs</item>
+        <!-- <item name="actionBarTabStyle">@style/MyActionBarTabs</item> -->
     </style>
 
     <!-- ActionBar styles -->
@@ -32,10 +32,10 @@
         <item name="android:textColor">@color/actionbar_text</item>
     </style>
     
-    <style name="MyActionBarTabs"
+  <!--   <style name="MyActionBarTabs"
         parent="@style/Widget.AppCompat.ActionBar.TabView">
-        <item name="android:background">@drawable/actionbar_tab_indicator</item>
-        <item name="background">@drawable/actionbar_tab_indicator</item>
-    </style>
+        <item name="android:background">@drawable/actionbar_tab</item>
+        <item name="background">@drawable/actionbar_tab</item>
+    </style> -->
 
 </resources>

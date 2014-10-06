@@ -6,13 +6,14 @@
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_action_search"
-         myFirstApp:showAsAction="ifRoom"
-        android:title="@string/action_search"/>
+        android:title="@string/action_search"
+        myFirstApp:showAsAction="ifRoom|collapseActionView"
+        myFirstApp:actionViewClass="android.support.v7.widget.SearchView"/>
     <!-- Settings, should always be in the overflow -->
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_action_overflow"
-        myFirstApp:showAsAction="always"
-        android:title="@string/action_settings"/>
+        android:title="@string/action_settings"
+        myFirstApp:showAsAction="always"/>
 
 </menu>
