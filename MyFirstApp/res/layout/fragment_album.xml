@@ -1,12 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <!-- custID输入框 -->
     <TextView
+        android:id="@+id/custID_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/album" />
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="5dip"
+        android:text="@string/custID_label" />
+
+    <EditText
+        android:id="@+id/custID_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_toRightOf="@id/custID_title"
+        android:hint="@string/custID_hint" 
+        android:textSize="14sp"/>
+    
+    <!-- custName输入框 -->
+    <TextView
+        android:id="@+id/custName_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/custID_content"
+        android:layout_marginLeft="10dip"
+       android:layout_marginTop="5dip"
+        android:text="@string/custName_label" />
+
+    <EditText
+        android:id="@+id/custName_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_below="@id/custID_content"
+        android:layout_toRightOf="@id/custName_title"
+        android:hint="@string/custName_hint" 
+        android:textSize="14sp"/>
+    
+    <!-- siteName输入框 -->
+    <TextView
+        android:id="@+id/siteName_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/custName_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="5dip"
+        android:text="@string/siteName_label" 
+        />
+
+    <EditText
+        android:id="@+id/siteName_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_below="@id/custName_content"
+        android:layout_toRightOf="@id/siteName_title"
+        android:hint="@string/siteName_hint" 
+        android:textSize="14sp"/>
+    
+    <!-- pageNo输入框 -->
+    <TextView
+        android:id="@+id/pageNo_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/siteName_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="5dip"
+        android:text="@string/pageNo_label" />
+
+    <EditText
+        android:id="@+id/pageNo_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_below="@id/siteName_content"
+        android:layout_toRightOf="@id/pageNo_title"
+        android:hint="@string/pageNo_hint" 
+        android:textSize="14sp"/>
+    
+    <!-- pageSize输入框 -->
+    <TextView
+        android:id="@+id/pageSize_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pageNo_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="5dip"
+        android:text="@string/pageSize_label" />
+
+    <EditText
+        android:id="@+id/pageSize_content"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_below="@id/pageNo_content"
+        android:layout_toRightOf="@id/pageSize_title"
+        android:hint="@string/pageSize_hint"
+        android:textSize="14sp" />
+
+    <!-- 查询按钮 -->
+    <Button
+        android:id="@+id/query_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/pageSize_content"
+        android:layout_marginLeft="10dip"
+        android:onClick="queryWebservice"
+        android:text="@string/query_btn" />
+
+ <!-- 查询结果 -->
+    <TextView
+        android:id="@+id/webservice_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/query_btn"
+        android:scrollbars="vertical"
+        android:singleLine="false" />
 
 </RelativeLayout>
