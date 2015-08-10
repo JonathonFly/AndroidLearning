@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:orientation="vertical"  
+    android:layout_width="fill_parent"  
+    android:layout_height="fill_parent"  
+    >  
+ <!-- 标题 -->  
+ <LinearLayout  
+  android:orientation="horizontal"  
+  android:layout_width="fill_parent"  
+  android:layout_height="wrap_content">  
+    
+     <TextView  
+   android:layout_width="30dp"  
+   android:layout_height="wrap_content"  
+   android:text="num"  
+  />  
+     
+  <TextView  
+   android:layout_width="70dp"  
+   android:layout_height="wrap_content"  
+   android:text="siteName"  
+  />  
+   
+   <TextView  
+   android:layout_width="120dp"  
+   android:layout_height="wrap_content"  
+   android:text="address"  
+  />  
+  
+   <TextView  
+   android:layout_width="70dp"  
+   android:layout_height="wrap_content"  
+   android:text="country"  
+  />  
+    
+  <TextView  
+   android:layout_width="fill_parent"  
+   android:layout_height="wrap_content"  
+   android:text="city"  
+  />  
+     
+</LinearLayout>  
+ <!-- ListView控件 -->  
+<ListView    
+    android:layout_width="fill_parent"   
+    android:layout_height="fill_parent"   
+    android:id="@+id/sitelistView"  
+    />  
+</LinearLayout>  

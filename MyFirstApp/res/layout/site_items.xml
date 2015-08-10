@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/sitelistView"
+    android:orientation="horizontal" >
+
+    <TextView  
+   android:layout_width="30dp"  
+   android:layout_height="wrap_content"  
+   android:id="@+id/siteItem_num"  
+  />  
+    
+      <TextView  
+   android:layout_width="70dp"  
+   android:layout_height="wrap_content"  
+   android:id="@+id/siteItem_siteName"  
+  />  
+  <!-- address -->  
+  <TextView  
+   android:layout_width="120dp"  
+   android:layout_height="wrap_content"  
+   android:id="@+id/siteItem_address"  
+  />  
+  <!-- country -->  
+  <TextView  
+   android:layout_width="70dp"  
+   android:layout_height="wrap_content"  
+   android:id="@+id/siteItem_country"  
+  />  
+   <!-- city -->  
+  <TextView  
+   android:layout_width="fill_parent"  
+   android:layout_height="wrap_content"  
+   android:id="@+id/siteItem_city"  
+  />  
+    
+
+</LinearLayout>
