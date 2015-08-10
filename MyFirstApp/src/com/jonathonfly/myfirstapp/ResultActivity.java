@@ -1,12 +1,12 @@
 package com.jonathonfly.myfirstapp;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -42,6 +42,11 @@ public class ResultActivity extends ActionBarActivity {
 		setContentView(R.layout.site_main);
 		getBundle();
 		new Thread(runnable).start();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 	}
 
 	@Override
@@ -92,7 +97,8 @@ public class ResultActivity extends ActionBarActivity {
 	Runnable runnable = new Runnable() {
 		@Override
 		public void run() {
-			HttpTransportSE ht = new HttpTransportSE(SERVICE_URL);
+
+			HttpTransportSE ht = new HttpTransportSE(SERVICE_URL, TIME_OUT);
 			SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(
 					SoapEnvelope.VER11);
 			SoapObject request = new SoapObject(SERVICE_NS, "siteInfoQuery");
@@ -103,10 +109,15 @@ public class ResultActivity extends ActionBarActivity {
 			request.addProperty("pageSize", pageSize);
 			envelope.bodyOut = request;
 
+			// 添加HeaderProperty信息，解决调用call的时候报java.io.EOFException错误
+			ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<HeaderProperty>();
+			headerPropertyArrayList.add(new HeaderProperty("Connection",
+					"close"));
+
 			String name = "";
 			try {
 				// 调用webService
-				ht.call(null, envelope);
+				ht.call(null, envelope, headerPropertyArrayList);
 				if (envelope.getResponse() != null) {
 					SoapObject result = (SoapObject) envelope.bodyIn;
 					name = result.getProperty(0).toString();
@@ -114,29 +125,19 @@ public class ResultActivity extends ActionBarActivity {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-			} finally {
-				// 关闭连接
-				if (ht != null) {
-					ht.reset();
-					try {
-						ht.getServiceConnection().disconnect();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
 			}
 
 			// 将webservice结果传送到handler
-			Message msg = new Message();
+			Message msg = myHandler.obtainMessage();
 			Bundle data = new Bundle();
 			data.putString("siteInfoQueryResult", name);
 			msg.setData(data);
-			handler.sendMessage(msg);
+			myHandler.sendMessage(msg);
 		}
 	};
 
 	// handler接收新线程传送过来的结果，将其赋值到UI界面
-	Handler handler = new Handler() {
+	class MyHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 
@@ -213,10 +214,12 @@ public class ResultActivity extends ActionBarActivity {
 	private SiteParser parser;
 	final static String SERVICE_NS = "http://service.ws.ideal.com/";
 	final static String SERVICE_URL = "http://101.226.172.121/netcare-ws/siteWs";
+	final static Integer TIME_OUT = 10000;
 	private String custID;
 	private String custName;
 	private String siteName;
 	private String pageNo;
 	private String pageSize;
+	private Handler myHandler = new MyHandler();
 
 }
