@@ -1,46 +1,34 @@
 package com.jonathonfly.myfirstapp;
 
-import java.io.IOException;
-
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpResponseException;
-import org.ksoap2.transport.HttpTransportSE;
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 @SuppressLint("NewApi")
 public class MainActivity extends ActionBarActivity {
 	public final static String EXTRA_MESSAGE = "com.jonathonfly.myfirstapp.MESSAGE";
-	final static String SERVICE_NS = "http://ws.nws.ideal.com";
-	final static String SERVICE_URL = "http://101.226.172.121/netcare_nws/nws/SiteWS";
+	final static String SERVICE_NS = "http://service.ws.ideal.com/";
+	final static String SERVICE_URL = "http://101.226.172.121/netcare-ws/siteWs";
 
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.activity_main);
-		if (android.os.Build.VERSION.SDK_INT > 9) {
-			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-					.permitAll().build();
-			StrictMode.setThreadPolicy(policy);
-		}
+		/*
+		 * if (android.os.Build.VERSION.SDK_INT > 9) { StrictMode.ThreadPolicy
+		 * policy = new StrictMode.ThreadPolicy.Builder() .permitAll().build();
+		 * StrictMode.setThreadPolicy(policy); }
+		 */
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -108,51 +96,39 @@ public class MainActivity extends ActionBarActivity {
 		startActivity(intent);
 	}
 
-	public void queryWebservice(View view)  {
-		TextView textView_result = (TextView) findViewById(R.id.webservice_result);
-		textView_result.setMovementMethod(ScrollingMovementMethod.getInstance());
-		
-		EditText editText1 = (EditText) findViewById(R.id.custID_content);
+	public void queryWebservice(View view) {
+		Intent intent = new Intent();  
+        intent.setClass(MainActivity.this, ResultActivity.class);  
+        
+    	EditText editText1 = (EditText) findViewById(R.id.custID_content);
 		String custID = editText1.getText().toString();
-		custID=custID.trim();
-		
+		custID = custID.trim();
+
 		EditText editText2 = (EditText) findViewById(R.id.custName_content);
 		String custName = editText2.getText().toString();
-		custName=custName.trim();
-		
+		custName = custName.trim();
+
 		EditText editText3 = (EditText) findViewById(R.id.siteName_content);
 		String siteName = editText3.getText().toString();
-		siteName=siteName.trim();
-		
+		siteName = siteName.trim();
+
 		EditText editText4 = (EditText) findViewById(R.id.pageNo_content);
 		String pageNo = editText4.getText().toString();
-		pageNo=pageNo.trim();
-		
+		pageNo = pageNo.trim();
+
 		EditText editText5 = (EditText) findViewById(R.id.pageSize_content);
 		String pageSize = editText5.getText().toString();
-		pageSize=pageSize.trim();
-
-		HttpTransportSE ht = new HttpTransportSE(SERVICE_URL);
-		SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(
-				SoapEnvelope.VER11);
-		SoapObject request = new SoapObject(SERVICE_NS, "siteInfoQuery");
-		request.addProperty("in0", custID);
-		request.addProperty("in1", custName);
-		request.addProperty("in2", siteName);
-		request.addProperty("in3",pageNo);
-		request.addProperty("in4", pageSize);
-		envelope.bodyOut = request;
-		try {
-			// 调用webService
-			ht.call(null, envelope);
-			if (envelope.getResponse() != null) {
-				SoapObject result = (SoapObject) envelope.bodyIn;
-				String name = result.getProperty(0).toString();
-				textView_result.setText("返回值 = " + name);
-			} else {
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		pageSize = pageSize.trim();
+        
+        Bundle bundle = new Bundle();   
+        bundle.putString("custID", custID);  
+        bundle.putString("custName", custName);  
+        bundle.putString("siteName", siteName);  
+        bundle.putString("pageNo", pageNo);  
+        bundle.putString("pageSize", pageSize);  
+        intent.putExtras(bundle);  
+        startActivity(intent);  
 	}
+
+	
 }
