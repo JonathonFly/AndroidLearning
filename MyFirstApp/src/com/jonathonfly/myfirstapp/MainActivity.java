@@ -16,8 +16,6 @@ import android.widget.EditText;
 @SuppressLint("NewApi")
 public class MainActivity extends ActionBarActivity {
 	public final static String EXTRA_MESSAGE = "com.jonathonfly.myfirstapp.MESSAGE";
-	final static String SERVICE_NS = "http://service.ws.ideal.com/";
-	final static String SERVICE_URL = "http://101.226.172.121/netcare-ws/siteWs";
 
 	@SuppressLint("NewApi")
 	@Override
@@ -88,13 +86,13 @@ public class MainActivity extends ActionBarActivity {
 
 	}
 
-	public void sendMessage(View view) {
+/*	public void sendMessage(View view) {
 		Intent intent = new Intent(this, DisplayMessageActivity.class);
 		EditText editText = (EditText) findViewById(R.id.edit_message);
 		String message = editText.getText().toString();
 		intent.putExtra(EXTRA_MESSAGE, message);
 		startActivity(intent);
-	}
+	}*/
 
 	public void queryWebservice(View view) {
 		Intent intent = new Intent();  

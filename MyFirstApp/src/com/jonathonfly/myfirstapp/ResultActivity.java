@@ -149,7 +149,7 @@ public class ResultActivity extends ActionBarActivity {
 			ListView listView = (ListView) findViewById(R.id.sitelistView);
 
 			List<HashMap<String, Object>> data1 = new ArrayList<HashMap<String, Object>>();
-			if (siteList.size() > 0) {
+			if (siteList != null && siteList.size() > 0) {
 				int i = 1;
 				for (SiteInfoModel siteInfoModel : siteList) {
 
@@ -163,12 +163,13 @@ public class ResultActivity extends ActionBarActivity {
 				}
 			}
 
-			Context c = ContextUtil.getInstance();
+			// Context c = ContextUtil.getInstance();
+
 			// 创建SimpleAdapter适配器将数据绑定到item显示控件上
-			SimpleAdapter adapter = new SimpleAdapter(c, data1,
-					R.layout.site_items, new String[] { "num", "siteName",
-							"address", "country", "city" }, new int[] {
-							R.id.siteItem_num, R.id.siteItem_siteName,
+			SimpleAdapter adapter = new SimpleAdapter(getApplicationContext(),
+					data1, R.layout.site_items, new String[] { "num",
+							"siteName", "address", "country", "city" },
+					new int[] { R.id.siteItem_num, R.id.siteItem_siteName,
 							R.id.siteItem_address, R.id.siteItem_country,
 							R.id.siteItem_city });
 			// 实现列表的显示
@@ -193,6 +194,8 @@ public class ResultActivity extends ActionBarActivity {
 			} catch (Exception e) {
 				Log.e(TAG, e.getMessage());
 			}
+		} else {
+			siteList = null;
 		}
 		return siteList;
 	}
@@ -200,13 +203,18 @@ public class ResultActivity extends ActionBarActivity {
 	// 获取点击事件
 	private final class ItemClickListener implements OnItemClickListener {
 
+		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			ListView listView = (ListView) parent;
 			HashMap<String, Object> data = (HashMap<String, Object>) listView
 					.getItemAtPosition(position);
-			String siteName = data.get("siteName").toString();
-			Toast.makeText(getApplicationContext(), siteName, 1).show();
+			if (data.containsKey("siteName")) {
+				String siteName = data.get("siteName").toString();
+				if (siteName != null && !siteName.equals("")) {
+					Toast.makeText(getApplicationContext(), siteName, 1).show();
+				}
+			}
 		}
 	}
 

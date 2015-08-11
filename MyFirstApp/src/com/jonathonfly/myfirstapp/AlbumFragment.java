@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 public class AlbumFragment extends Fragment {
-	Button query_btn;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -19,4 +22,11 @@ public class AlbumFragment extends Fragment {
 
 		return rootView;
 	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+	
 }

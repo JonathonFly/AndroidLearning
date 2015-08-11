@@ -12,12 +12,13 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/CustomActionBarTheme" 
-        android:name="com.jonathonfly.myfirstapp.utils.ContextUtil" 
-        >
+        android:theme="@style/CustomActionBarTheme" >
+        <!-- android:name="com.jonathonfly.myfirstapp.utils.ContextUtil">  -->
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +29,8 @@
         <activity
             android:name=".DisplayMessageActivity"
             android:label="@string/title_activity_display_message"  
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jonathonfly.myfirstapp.MainActivity" />
@@ -37,7 +39,8 @@
         <activity
             android:name=".ResultActivity"
             android:label="@string/result_page_name"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity" 
+            android:launchMode="singleTask">
                 <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jonathonfly.myfirstapp.MainActivity" />
