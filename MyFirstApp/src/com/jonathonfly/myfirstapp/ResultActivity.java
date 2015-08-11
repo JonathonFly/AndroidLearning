@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.ksoap2.HeaderProperty;
@@ -150,6 +151,15 @@ public class ResultActivity extends ActionBarActivity {
 
 			List<HashMap<String, Object>> data1 = new ArrayList<HashMap<String, Object>>();
 			if (siteList != null && siteList.size() > 0) {
+				
+				for (Iterator<SiteInfoModel> iter = siteList.iterator(); iter.hasNext(); ) {  
+					SiteInfoModel siteInfoModel=(SiteInfoModel)iter.next();
+					if(siteInfoModel.getAddress()==null && siteInfoModel.getCity()==null &&siteInfoModel.getCountry()==null &&siteInfoModel.getSiteName()==null){
+						siteList.remove(siteInfoModel);
+					}
+				}  
+			}
+			if (siteList != null && siteList.size() > 0) {
 				int i = 1;
 				for (SiteInfoModel siteInfoModel : siteList) {
 
@@ -209,7 +219,7 @@ public class ResultActivity extends ActionBarActivity {
 			ListView listView = (ListView) parent;
 			HashMap<String, Object> data = (HashMap<String, Object>) listView
 					.getItemAtPosition(position);
-			if (data.containsKey("siteName")) {
+			if (data.containsKey("siteName") && data.get("siteName")!=null) {
 				String siteName = data.get("siteName").toString();
 				if (siteName != null && !siteName.equals("")) {
 					Toast.makeText(getApplicationContext(), siteName, 1).show();
