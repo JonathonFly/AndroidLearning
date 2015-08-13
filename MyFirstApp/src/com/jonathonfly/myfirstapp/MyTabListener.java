@@ -1,6 +1,7 @@
 package com.jonathonfly.myfirstapp;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar.Tab;
@@ -11,6 +12,7 @@ public class MyTabListener<T extends Fragment> implements TabListener {
     private final Activity mActivity;
     private final String mTag;
     private final Class<T> mClass;
+    private final Bundle mArgs;
 
     /** Constructor used each time a new tab is created.
       * @param activity  The host Activity, used to instantiate the fragment
@@ -18,9 +20,14 @@ public class MyTabListener<T extends Fragment> implements TabListener {
       * @param clz  The fragment's Class, used to instantiate the fragment
       */
     public MyTabListener(Activity activity, String tag, Class<T> clz) {
+    	this(activity, tag, clz, null);
+    }
+    
+    public MyTabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
         mActivity = activity;
         mTag = tag;
         mClass = clz;
+        mArgs = args;
     }
 
     /* The following are each of the ActionBar.TabListener callbacks */

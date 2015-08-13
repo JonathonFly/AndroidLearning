@@ -1144,6 +1144,8 @@ containing a value of this type.
         public static final int search_plate=0x7f050036;
         public static final int search_src_text=0x7f050037;
         public static final int search_voice_btn=0x7f05003b;
+        public static final int setting_first=0x7f05004f;
+        public static final int setting_second=0x7f050050;
         public static final int shortcut=0x7f05002e;
         public static final int showCustom=0x7f050007;
         public static final int showHome=0x7f050004;
@@ -1288,6 +1290,8 @@ containing a value of this type.
         public static final int pageSize_label=0x7f0a001d;
         public static final int query_btn=0x7f0a0018;
         public static final int result_page_name=0x7f0a0023;
+        public static final int setting_first=0x7f0a0024;
+        public static final int setting_second=0x7f0a0025;
         public static final int siteName_hint=0x7f0a0020;
         public static final int siteName_label=0x7f0a001b;
         public static final int title_activity_display_message=0x7f0a0012;

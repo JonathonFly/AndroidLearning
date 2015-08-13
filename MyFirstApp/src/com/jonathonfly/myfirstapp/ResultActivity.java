@@ -150,6 +150,7 @@ public class ResultActivity extends ActionBarActivity {
 			ListView listView = (ListView) findViewById(R.id.sitelistView);
 
 			List<HashMap<String, Object>> data1 = new ArrayList<HashMap<String, Object>>();
+			//将siteList中address，city，country，siteName均为空的值删掉
 			if (siteList != null && siteList.size() > 0) {
 				
 				for (Iterator<SiteInfoModel> iter = siteList.iterator(); iter.hasNext(); ) {  
@@ -159,6 +160,7 @@ public class ResultActivity extends ActionBarActivity {
 					}
 				}  
 			}
+			//item显示控件的数据
 			if (siteList != null && siteList.size() > 0) {
 				int i = 1;
 				for (SiteInfoModel siteInfoModel : siteList) {

@@ -1,21 +1,37 @@
 package com.jonathonfly.myfirstapp;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class MainActivity extends ActionBarActivity {
-	public final static String EXTRA_MESSAGE = "com.jonathonfly.myfirstapp.MESSAGE";
+	private Context context;
+	private MyHandler handler;
+	// schedule executor
+	private ScheduledExecutorService scheduledExecutor = Executors
+			.newScheduledThreadPool(10);
+	private String currentSearchTip;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -30,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
 		Tab tab = actionBar
 				.newTab()
@@ -47,6 +64,17 @@ public class MainActivity extends ActionBarActivity {
 								AlbumFragment.class));
 		actionBar.addTab(tab);
 
+		if (savedInstanceState != null) {
+			actionBar.setSelectedNavigationItem(savedInstanceState.getInt(
+					"tab", 0));
+		}
+
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("tab", getActionBar().getSelectedNavigationIndex());
 	}
 
 	@Override
@@ -56,7 +84,71 @@ public class MainActivity extends ActionBarActivity {
 		MenuItem searchItem = menu.findItem(R.id.action_search);
 		SearchView searchView = (SearchView) MenuItemCompat
 				.getActionView(searchItem);
+
+		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+			public boolean onQueryTextSubmit(String query) {
+				Toast.makeText(getApplicationContext(),
+						"begin search:" + query, Toast.LENGTH_SHORT).show();
+				return true;
+			}
+
+			public boolean onQueryTextChange(String newText) {
+				if (newText != null && newText.length() > 0) {
+					currentSearchTip = newText;
+					showSearchTip(newText);
+				}
+				return true;
+			}
+		});
+
+		// show keyboard
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+						| WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	public void showSearchTip(String newText) {
+		// excute after 500ms, and when excute, judge current search tip and
+		// newText
+		schedule(new SearchTipThread(newText), 500);
+	}
+
+	class SearchTipThread implements Runnable {
+		String newText;
+
+		public SearchTipThread(String newText) {
+			this.newText = newText;
+		}
+
+		public void run() {
+			// keep only one thread to load current search tip, u can get data
+			// from network here
+			if (newText != null && newText.equals(currentSearchTip)) {
+				handler.sendMessage(handler.obtainMessage(1, newText
+						+ " search tip"));
+			}
+		}
+	}
+
+	private class MyHandler extends Handler {
+
+		@Override
+		public void handleMessage(Message msg) {
+
+			switch (msg.what) {
+			case 1:
+				Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT)
+						.show();
+				break;
+			}
+		}
+	}
+
+	public ScheduledFuture<?> schedule(Runnable command, long delayTimeMills) {
+		return scheduledExecutor.schedule(command, delayTimeMills,
+				TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -71,34 +163,63 @@ public class MainActivity extends ActionBarActivity {
 		case R.id.action_settings:
 			openSettings();
 			return true;
+		case R.id.setting_first:
+			setting_first_click();
+			return true;
+		case R.id.setting_second:
+			setting_second_click();
+			return true;
+		case android.R.id.home:
+			onBackPressed();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
 	private void openSettings() {
-		// TODO Auto-generated method stub
+		/*
+		 * Toast toast = Toast.makeText(getApplicationContext(), "settings",
+		 * Toast.LENGTH_LONG); toast.setGravity(Gravity.CENTER, 0, 0);
+		 * toast.show();
+		 */
+	}
 
+	private void setting_first_click() {
+		Toast toast = Toast.makeText(getApplicationContext(),
+				"setting first click!", Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.CENTER, 0, 0);
+		toast.show();
+	}
+
+	private void setting_second_click() {
+		Toast toast = Toast.makeText(getApplicationContext(),
+				"setting second click!", Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.CENTER, 0, 0);
+		toast.show();
 	}
 
 	private void openSearch() {
-		// TODO Auto-generated method stub
-
+		/*
+		 * Toast toast = Toast.makeText(getApplicationContext(), "search",
+		 * Toast.LENGTH_LONG); toast.setGravity(Gravity.CENTER, 0, 0);
+		 * toast.show();
+		 */
 	}
 
-/*	public void sendMessage(View view) {
-		Intent intent = new Intent(this, DisplayMessageActivity.class);
-		EditText editText = (EditText) findViewById(R.id.edit_message);
-		String message = editText.getText().toString();
-		intent.putExtra(EXTRA_MESSAGE, message);
-		startActivity(intent);
-	}*/
+	/*
+	 * public void sendMessage(View view) { Intent intent = new Intent(this,
+	 * DisplayMessageActivity.class); EditText editText = (EditText)
+	 * findViewById(R.id.edit_message); String message =
+	 * editText.getText().toString(); intent.putExtra(EXTRA_MESSAGE, message);
+	 * startActivity(intent); }
+	 */
 
 	public void queryWebservice(View view) {
-		Intent intent = new Intent();  
-        intent.setClass(MainActivity.this, ResultActivity.class);  
-        
-    	EditText editText1 = (EditText) findViewById(R.id.custID_content);
+		Intent intent = new Intent();
+		intent.setClass(MainActivity.this, ResultActivity.class);
+
+		EditText editText1 = (EditText) findViewById(R.id.custID_content);
 		String custID = editText1.getText().toString();
 		custID = custID.trim();
 
@@ -117,16 +238,15 @@ public class MainActivity extends ActionBarActivity {
 		EditText editText5 = (EditText) findViewById(R.id.pageSize_content);
 		String pageSize = editText5.getText().toString();
 		pageSize = pageSize.trim();
-        
-        Bundle bundle = new Bundle();   
-        bundle.putString("custID", custID);  
-        bundle.putString("custName", custName);  
-        bundle.putString("siteName", siteName);  
-        bundle.putString("pageNo", pageNo);  
-        bundle.putString("pageSize", pageSize);  
-        intent.putExtras(bundle);  
-        startActivity(intent);  
+
+		Bundle bundle = new Bundle();
+		bundle.putString("custID", custID);
+		bundle.putString("custName", custName);
+		bundle.putString("siteName", siteName);
+		bundle.putString("pageNo", pageNo);
+		bundle.putString("pageSize", pageSize);
+		intent.putExtras(bundle);
+		startActivity(intent);
 	}
 
-	
 }

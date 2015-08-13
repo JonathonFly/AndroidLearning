@@ -24,5 +24,7 @@
     <string name="pageNo_hint">请输入pageNo</string>
     <string name="pageSize_hint">请输入pageSize</string>
     <string name="result_page_name">查询结果</string>
+     <string name="setting_first">设置1</string>
+     <string name="setting_second">设置2</string>
 
 </resources>

@@ -7,13 +7,25 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_action_search"
         android:title="@string/action_search"
-        myFirstApp:showAsAction="ifRoom|collapseActionView"
-        myFirstApp:actionViewClass="android.support.v7.widget.SearchView"/>
+        android:imeOptions="actionSearch"
+        android:iconifiedByDefault="true"
+        android:inputType="textCapWords"
+        myFirstApp:actionViewClass="android.support.v7.widget.SearchView"
+        myFirstApp:showAsAction="ifRoom|collapseActionView"/>
     <!-- Settings, should always be in the overflow -->
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_action_overflow"
         android:title="@string/action_settings"
-        myFirstApp:showAsAction="always"/>
+        myFirstApp:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/setting_first"
+                android:title="@string/setting_first"/>
+            <item
+                android:id="@+id/setting_second"
+                android:title="@string/setting_second"/>
+        </menu>
+    </item>
 
 </menu>
