@@ -6,7 +6,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnCloseListener;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,8 +26,7 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class MainActivity extends ActionBarActivity {
-	private Context context;
-	private MyHandler handler;
+	private Handler myHandler = new MyHandler();
 	// schedule executor
 	private ScheduledExecutorService scheduledExecutor = Executors
 			.newScheduledThreadPool(10);
@@ -85,6 +84,11 @@ public class MainActivity extends ActionBarActivity {
 		SearchView searchView = (SearchView) MenuItemCompat
 				.getActionView(searchItem);
 
+		/*
+		 * 表示输入框文字listener，包括public boolean onQueryTextSubmit(String
+		 * query)开始搜索listener，public boolean onQueryTextChange(String
+		 * newText)输入框内容变化listener，两个函数
+		 */
 		searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 			public boolean onQueryTextSubmit(String query) {
 				Toast.makeText(getApplicationContext(),
@@ -101,10 +105,41 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 
+		// 编辑框内容为空点击取消的x按钮，编辑框收缩
+		searchView.setOnCloseListener(new OnCloseListener() {
+			@Override
+			public boolean onClose() {
+				return true;
+			}
+		});
+
 		// show keyboard
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 						| WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		
+		//在内容为空时不显示取消的x按钮，内容不为空时显示
+		searchView.onActionViewExpanded();
+		
+		//编辑框后显示search按钮
+		searchView.setSubmitButtonEnabled(true);
+		
+/*		//隐藏输入法键盘
+		InputMethodManager inputMethodManager;
+		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		 
+		private void hideSoftInput() {
+			if (inputMethodManager != null) {
+				View v = MainActivity.this.getCurrentFocus();
+				if (v == null) {
+					return;
+				}
+		 
+				inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),
+														   InputMethodManager.HIDE_NOT_ALWAYS);
+				searchView.clearFocus();
+			}
+		}*/
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -126,7 +161,7 @@ public class MainActivity extends ActionBarActivity {
 			// keep only one thread to load current search tip, u can get data
 			// from network here
 			if (newText != null && newText.equals(currentSearchTip)) {
-				handler.sendMessage(handler.obtainMessage(1, newText
+				myHandler.sendMessage(myHandler.obtainMessage(1, newText
 						+ " search tip"));
 			}
 		}
@@ -136,10 +171,9 @@ public class MainActivity extends ActionBarActivity {
 
 		@Override
 		public void handleMessage(Message msg) {
-
 			switch (msg.what) {
 			case 1:
-				Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT)
+				Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT)
 						.show();
 				break;
 			}
@@ -150,6 +184,8 @@ public class MainActivity extends ActionBarActivity {
 		return scheduledExecutor.schedule(command, delayTimeMills,
 				TimeUnit.MILLISECONDS);
 	}
+	
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
