@@ -11,8 +11,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DataSetObservable;
-import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,7 +22,6 @@ import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnCloseListener;
-import android.support.v7.widget.SearchView.OnSuggestionListener;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,10 +34,7 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity {
 	private SearchView searchView;
 	private Context context;
-	private Handler myHandler = new MyHandler();
-	// schedule executor
-	private ScheduledExecutorService scheduledExecutor = Executors
-			.newScheduledThreadPool(10);
+	private SimpleCursorAdapter adapter;
 	private String currentSearchTip;
 
 	@SuppressLint("NewApi")
@@ -104,8 +98,7 @@ public class MainActivity extends ActionBarActivity {
 		
 		final Cursor cursor =getTestCursor(currentSearchTip);
 
-		@SuppressWarnings("deprecation")
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+		adapter = new SimpleCursorAdapter(this,
 				R.layout.mytextview, cursor, new String[] { "tb_name" },
 				new int[] { R.id.textview });
 		
@@ -115,14 +108,14 @@ public class MainActivity extends ActionBarActivity {
 			public boolean onSuggestionSelect(int i) {
 /*				Toast.makeText(getApplicationContext(),
 						"select:" + i+" of "+ cursor.getString(1) , Toast.LENGTH_SHORT).show();*/
-				searchView.setQuery(cursor.getString(1), true);
+				searchView.setQuery(adapter.getCursor().getString(1), true);
 				return true;
 			}
 
 			public boolean onSuggestionClick(int i){
 /*				Toast.makeText(getApplicationContext(),
 						"select: " + i+" of "+ cursor.getString(1), Toast.LENGTH_SHORT).show();*/
-				searchView.setQuery(cursor.getString(1), true);
+				searchView.setQuery(adapter.getCursor().getString(1), true);
 				return true;
 			}
 		});
@@ -142,8 +135,8 @@ public class MainActivity extends ActionBarActivity {
 			public boolean onQueryTextChange(String newText) {
 				if (newText != null && newText.length() > 0) {
 					currentSearchTip = newText;
-//					cursor=getTestCursor(currentSearchTip);
-//					showSearchTip(newText);
+					Cursor cursor1=getTestCursor(currentSearchTip);
+					adapter.changeCursor(cursor1);
 				}
 				return true;
 			}
@@ -190,70 +183,10 @@ public class MainActivity extends ActionBarActivity {
 				this.getFilesDir() + "/my.db3", null);
 
 		Cursor cursor = null;
-//		String querySql = "select * from tb_test where tb_name like '"+name+"%'";
-		String querySql = "select * from tb_test";
+		String querySql = "select * from tb_test where tb_name like '"+name+"%'";
+//		String querySql = "select * from tb_test";
 		cursor = db.rawQuery(querySql, null);
 		return cursor;
-	}
-
-	public void showSearchTip(String newText) {
-		// excute after 500ms, and when excute, judge current search tip and
-		// newText
-		schedule(new SearchTipThread(newText), 500);
-	}
-
-	class SearchTipThread implements Runnable {
-		String newText;
-
-		public SearchTipThread(String newText) {
-			this.newText = newText;
-		}
-
-		public void run() {
-			// keep only one thread to load current search tip, u can get data
-			// from network here
-			if (newText != null && newText.equals(currentSearchTip)) {
-				List<String> relativeWord = getRelativeWord(currentSearchTip);
-				myHandler.sendMessage(myHandler.obtainMessage(1, relativeWord));
-			}
-		}
-	}
-
-	private class MyHandler extends Handler {
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case 1:
-				List<String> msgObj = (List<String>) msg.obj;
-				if (msgObj != null && msgObj.size() > 0) {
-					Toast.makeText(getApplicationContext(), msgObj.get(0),
-							Toast.LENGTH_SHORT).show();
-				}
-				break;
-			}
-		}
-	}
-
-	public ScheduledFuture<?> schedule(Runnable command, long delayTimeMills) {
-		return scheduledExecutor.schedule(command, delayTimeMills,
-				TimeUnit.MILLISECONDS);
-	}
-
-	private List<String> getRelativeWord(String currentSearchTip) {
-		List<String> allWords = new ArrayList<String>();
-		allWords.add("relative");
-		allWords.add("notrelative");
-		allWords.add("tall");
-		allWords.add("short");
-
-		List<String> relativeWords = new ArrayList<String>();
-		for (int i = 0; allWords.size() > 0 && i < allWords.size(); i++) {
-			if (allWords.get(i).startsWith(currentSearchTip)) {
-				relativeWords.add(allWords.get(i));
-			}
-		}
-		return relativeWords;
 	}
 
 	@Override
@@ -353,5 +286,15 @@ public class MainActivity extends ActionBarActivity {
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}
+
+	@Override
+	protected void onDestroy() {
+		 if (adapter != null && adapter.getCursor() != null) {    
+		        adapter.getCursor().close();    
+		    }    
+		super.onDestroy();
+	}
+	
+	
 
 }
