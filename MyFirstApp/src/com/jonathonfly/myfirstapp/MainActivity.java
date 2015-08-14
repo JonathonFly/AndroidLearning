@@ -1,21 +1,30 @@
 package com.jonathonfly.myfirstapp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DataSetObservable;
+import android.database.DataSetObserver;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnCloseListener;
+import android.support.v7.widget.SearchView.OnSuggestionListener;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +35,8 @@ import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class MainActivity extends ActionBarActivity {
+	private SearchView searchView;
+	private Context context;
 	private Handler myHandler = new MyHandler();
 	// schedule executor
 	private ScheduledExecutorService scheduledExecutor = Executors
@@ -81,8 +92,40 @@ public class MainActivity extends ActionBarActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_activity_actions, menu);
 		MenuItem searchItem = menu.findItem(R.id.action_search);
-		SearchView searchView = (SearchView) MenuItemCompat
+		final SearchView searchView = (SearchView) MenuItemCompat
 				.getActionView(searchItem);
+
+		searchView.setQueryHint("查询");
+
+		/*Cursor cursor =null;
+		if(currentSearchTip!=null && !currentSearchTip.equals("")){
+			cursor =getTestCursor(currentSearchTip);
+		}*/
+		
+		final Cursor cursor =getTestCursor(currentSearchTip);
+
+		@SuppressWarnings("deprecation")
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+				R.layout.mytextview, cursor, new String[] { "tb_name" },
+				new int[] { R.id.textview });
+		
+		searchView.setSuggestionsAdapter(adapter);
+		
+		searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+			public boolean onSuggestionSelect(int i) {
+/*				Toast.makeText(getApplicationContext(),
+						"select:" + i+" of "+ cursor.getString(1) , Toast.LENGTH_SHORT).show();*/
+				searchView.setQuery(cursor.getString(1), true);
+				return true;
+			}
+
+			public boolean onSuggestionClick(int i){
+/*				Toast.makeText(getApplicationContext(),
+						"select: " + i+" of "+ cursor.getString(1), Toast.LENGTH_SHORT).show();*/
+				searchView.setQuery(cursor.getString(1), true);
+				return true;
+			}
+		});
 
 		/*
 		 * 表示输入框文字listener，包括public boolean onQueryTextSubmit(String
@@ -99,7 +142,8 @@ public class MainActivity extends ActionBarActivity {
 			public boolean onQueryTextChange(String newText) {
 				if (newText != null && newText.length() > 0) {
 					currentSearchTip = newText;
-					showSearchTip(newText);
+//					cursor=getTestCursor(currentSearchTip);
+//					showSearchTip(newText);
 				}
 				return true;
 			}
@@ -117,31 +161,39 @@ public class MainActivity extends ActionBarActivity {
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 						| WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-		
-		//在内容为空时不显示取消的x按钮，内容不为空时显示
+
+		// 在内容为空时不显示取消的x按钮，内容不为空时显示
 		searchView.onActionViewExpanded();
-		
-		//编辑框后显示search按钮
+
+		// 编辑框后显示search按钮
 		searchView.setSubmitButtonEnabled(true);
-		
-/*		//隐藏输入法键盘
-		InputMethodManager inputMethodManager;
-		inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-		 
-		private void hideSoftInput() {
-			if (inputMethodManager != null) {
-				View v = MainActivity.this.getCurrentFocus();
-				if (v == null) {
-					return;
-				}
-		 
-				inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),
-														   InputMethodManager.HIDE_NOT_ALWAYS);
-				searchView.clearFocus();
-			}
-		}*/
 
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	/*
+	 * private void hideSoftInput() { // 隐藏输入法键盘 InputMethodManager
+	 * inputMethodManager; inputMethodManager = (InputMethodManager)
+	 * getSystemService(Context.INPUT_METHOD_SERVICE);
+	 * 
+	 * if (inputMethodManager != null) { View v =
+	 * MainActivity.this.getCurrentFocus(); if (v == null) { return; }
+	 * 
+	 * inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),
+	 * InputMethodManager.HIDE_NOT_ALWAYS); searchView.clearFocus(); } }
+	 */
+
+	// 添加suggestion需要的数据
+	public Cursor getTestCursor(String name) {
+
+		SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(
+				this.getFilesDir() + "/my.db3", null);
+
+		Cursor cursor = null;
+//		String querySql = "select * from tb_test where tb_name like '"+name+"%'";
+		String querySql = "select * from tb_test";
+		cursor = db.rawQuery(querySql, null);
+		return cursor;
 	}
 
 	public void showSearchTip(String newText) {
@@ -161,8 +213,8 @@ public class MainActivity extends ActionBarActivity {
 			// keep only one thread to load current search tip, u can get data
 			// from network here
 			if (newText != null && newText.equals(currentSearchTip)) {
-				myHandler.sendMessage(myHandler.obtainMessage(1, newText
-						+ " search tip"));
+				List<String> relativeWord = getRelativeWord(currentSearchTip);
+				myHandler.sendMessage(myHandler.obtainMessage(1, relativeWord));
 			}
 		}
 	}
@@ -173,8 +225,11 @@ public class MainActivity extends ActionBarActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case 1:
-				Toast.makeText(getApplicationContext(), (String) msg.obj, Toast.LENGTH_SHORT)
-						.show();
+				List<String> msgObj = (List<String>) msg.obj;
+				if (msgObj != null && msgObj.size() > 0) {
+					Toast.makeText(getApplicationContext(), msgObj.get(0),
+							Toast.LENGTH_SHORT).show();
+				}
 				break;
 			}
 		}
@@ -184,8 +239,22 @@ public class MainActivity extends ActionBarActivity {
 		return scheduledExecutor.schedule(command, delayTimeMills,
 				TimeUnit.MILLISECONDS);
 	}
-	
-	
+
+	private List<String> getRelativeWord(String currentSearchTip) {
+		List<String> allWords = new ArrayList<String>();
+		allWords.add("relative");
+		allWords.add("notrelative");
+		allWords.add("tall");
+		allWords.add("short");
+
+		List<String> relativeWords = new ArrayList<String>();
+		for (int i = 0; allWords.size() > 0 && i < allWords.size(); i++) {
+			if (allWords.get(i).startsWith(currentSearchTip)) {
+				relativeWords.add(allWords.get(i));
+			}
+		}
+		return relativeWords;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
